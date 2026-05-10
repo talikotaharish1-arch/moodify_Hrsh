@@ -299,7 +299,9 @@ function RoomView({ room, user, onBack, playSong }) {
 
   useEffect(() => {
     if (isHost) {
-      pb.collection('songs').getFullList().then(setSongs).catch(console.error)
+      databases.listDocuments(DB_ID, COLLECTIONS.SONGS)
+        .then(res => setSongs(res.documents))
+        .catch(console.error)
     }
   }, [isHost])
 
@@ -353,11 +355,11 @@ function RoomView({ room, user, onBack, playSong }) {
     const unsubscribe = client.subscribe([
       `databases.${DB_ID}.collections.${COLLECTIONS.MESSAGES}.documents`,
       `databases.${DB_ID}.collections.${COLLECTIONS.JAM_ROOMS}.documents`,
-      `databases.${DB_ID}.collections.typing.documents` // Assuming 'typing' collection exists
+      `databases.${DB_ID}.collections.${COLLECTIONS.TYPING}.documents` 
     ], (response) => {
       if (response.events.some(e => e.includes(`collections.${COLLECTIONS.MESSAGES}`))) fetchMessages()
       if (response.events.some(e => e.includes(`collections.${COLLECTIONS.JAM_ROOMS}`))) fetchRoom()
-      if (response.events.some(e => e.includes('collections.typing'))) fetchTyping()
+      if (response.events.some(e => e.includes(`collections.${COLLECTIONS.TYPING}`))) fetchTyping()
     })
 
     fetchTyping()
@@ -367,9 +369,7 @@ function RoomView({ room, user, onBack, playSong }) {
 
   const fetchTyping = async () => {
     try {
-      // Note: Appwrite doesn't allow 'user != current' filter easily without complex queries
-      // We'll fetch all and filter locally for simplicity
-      const result = await databases.listDocuments(DB_ID, 'typing', [
+      const result = await databases.listDocuments(DB_ID, COLLECTIONS.TYPING, [
         Query.equal('room', room.$id)
       ])
       const others = result.documents.filter(t => t.user !== user.id)
@@ -381,7 +381,7 @@ function RoomView({ room, user, onBack, playSong }) {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
     else {
       try {
-        await databases.createDocument(DB_ID, 'typing', user.id, { 
+        await databases.createDocument(DB_ID, COLLECTIONS.TYPING, user.id, { 
           user: user.id, 
           room: room.$id,
           user_name: user.name || user.email.split('@')[0]
@@ -392,7 +392,7 @@ function RoomView({ room, user, onBack, playSong }) {
     typingTimeoutRef.current = setTimeout(async () => {
       typingTimeoutRef.current = null
       try {
-        await databases.deleteDocument(DB_ID, 'typing', user.id)
+        await databases.deleteDocument(DB_ID, COLLECTIONS.TYPING, user.id)
       } catch (e) {}
     }, 3000)
   }

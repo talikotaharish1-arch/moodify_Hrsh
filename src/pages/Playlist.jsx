@@ -53,7 +53,7 @@ export default function Playlist() {
     try {
       setLoading(true)
       
-      const { databases, DB_ID, COLLECTIONS, ID } = await import('../services/appwrite')
+      const { databases, DB_ID, COLLECTIONS, ID, Query } = await import('../services/appwrite')
       
       if (!forceRegen) {
         try {

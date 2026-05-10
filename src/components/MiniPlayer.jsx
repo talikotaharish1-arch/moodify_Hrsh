@@ -59,10 +59,10 @@ export default function MiniPlayer() {
           </div>
           <button 
             className="player-icon-btn" 
-            style={{ marginLeft: 8, color: isLiked(currentSong.id) ? 'var(--accent)' : 'inherit' }}
-            onClick={(e) => { e.stopPropagation(); toggleLike(currentSong.id); }}
+            style={{ marginLeft: 8, color: isLiked(currentSong.$id) ? 'var(--accent)' : 'inherit' }}
+            onClick={(e) => { e.stopPropagation(); toggleLike(currentSong.$id); }}
           >
-            <Heart size={20} fill={isLiked(currentSong.id) ? 'currentColor' : 'none'} />
+            <Heart size={20} fill={isLiked(currentSong.$id) ? 'currentColor' : 'none'} />
           </button>
         </div>
 

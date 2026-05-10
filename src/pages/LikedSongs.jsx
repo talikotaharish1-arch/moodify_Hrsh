@@ -58,10 +58,10 @@ export default function LikedSongs() {
             ) : (
               <div className="song-list">
                 {likedSongs.map((song, i) => {
-                  const isActive = currentSong?.id === song.id
+                  const isActive = currentSong?.$id === song.$id
                   return (
                     <div 
-                      key={song.id} 
+                      key={song.$id} 
                       className={`song-row ${isActive ? 'active' : ''}`}
                       onClick={() => handlePlay(i)}
                     >
@@ -73,7 +73,7 @@ export default function LikedSongs() {
                       <span className="song-duration" style={{ marginRight: 16 }}>{fmt(song.duration)}</span>
                       <button 
                         className="song-action"
-                        onClick={(e) => { e.stopPropagation(); toggleLike(song.id); }}
+                        onClick={(e) => { e.stopPropagation(); toggleLike(song.$id); }}
                         style={{ color: 'var(--accent)' }}
                       >
                         <Heart size={18} fill="currentColor" />
